@@ -65,4 +65,33 @@ impl Utilities {
     pub fn base58_to_bytes(value: &str) -> UtilitiesResult<Vec<u8>> {
         Ok(bs58::decode(value).into_vec()?)
     }
+
+    #[cfg(feature = "tai64")]
+    pub fn bytes_to_tai64n(value: &[u8]) -> UtilitiesResult<tai64::Tai64N> {
+        Ok(tai64::Tai64N::from_slice(value)?)
+    }
+
+    #[cfg(feature = "tai64")]
+    pub fn tai64_get_secs(value: tai64::Tai64N) -> UtilitiesResult<u64> {
+        match value.duration_since(&tai64::Tai64N::UNIX_EPOCH) {
+            Ok(duration) => Ok(duration.as_secs()),
+            Err(_) => Err(UtilitiesError::Tai64InvalidEarlierDuaration),
+        }
+    }
+
+    #[cfg(feature = "tai64")]
+    pub fn tai64_get_millis(value: tai64::Tai64N) -> UtilitiesResult<u128> {
+        match value.duration_since(&tai64::Tai64N::UNIX_EPOCH) {
+            Ok(duration) => Ok(duration.as_millis()),
+            Err(_) => Err(UtilitiesError::Tai64InvalidEarlierDuaration),
+        }
+    }
+
+    #[cfg(feature = "tai64")]
+    pub fn tai64_get_nanos(value: tai64::Tai64N) -> UtilitiesResult<u128> {
+        match value.duration_since(&tai64::Tai64N::UNIX_EPOCH) {
+            Ok(duration) => Ok(duration.as_nanos()),
+            Err(_) => Err(UtilitiesError::Tai64InvalidEarlierDuaration),
+        }
+    }
 }

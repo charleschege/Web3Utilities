@@ -44,7 +44,22 @@ pub enum UtilitiesError {
     Base58NonAsciiCharacter {
         index: usize,
     },
+    Tai64LengthInvalid,
+    Tai64NanosInvalid,
+    /// The duration provided is smaller than the UNIX_EPOCH.
+    /// This operation is currently not supported
+    Tai64InvalidEarlierDuaration,
     UnsupportedBase58Error,
+}
+
+#[cfg(feature = "tai64")]
+impl From<tai64::Error> for UtilitiesError {
+    fn from(error: tai64::Error) -> Self {
+        match error {
+            tai64::Error::LengthInvalid => UtilitiesError::Tai64LengthInvalid,
+            tai64::Error::NanosInvalid => UtilitiesError::Tai64NanosInvalid,
+        }
+    }
 }
 
 #[cfg(feature = "base58")]

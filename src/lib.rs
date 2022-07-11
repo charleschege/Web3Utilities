@@ -7,6 +7,9 @@ pub use formats::*;
 mod errors;
 pub use errors::*;
 
+mod data_types;
+pub use data_types::*;
+
 #[cfg(feature = "random")]
 mod random;
 #[cfg(feature = "random")]

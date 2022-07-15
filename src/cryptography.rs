@@ -37,6 +37,20 @@ impl Utilities {
         }
     }
 
+    #[cfg(feature = "ed25519")]
+    pub fn is_signer_ed25519(
+        public_key: &Ed25519PublicKey,
+        message: &[u8],
+        signature: &Ed25519Signature,
+    ) -> UtilitiesResult<()> {
+        use ed25519_dalek::Verifier;
+
+        match public_key.verify(message, signature) {
+            Ok(_) => Ok(()),
+            Err(_) => Err(UtilitiesError::InvalidEd25519Signature),
+        }
+    }
+
     #[cfg(feature = "sr25519")]
     pub fn to_sr25519_keypair(bytes: &[u8]) -> UtilitiesResult<Sr25519Keypair> {
         match Sr25519Keypair::from_bytes(bytes) {

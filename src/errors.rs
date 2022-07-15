@@ -50,6 +50,7 @@ pub enum UtilitiesError {
     /// This operation is currently not supported
     Tai64InvalidEarlierDuaration,
     UnsupportedBase58Error,
+    InvalidEd25519Signature,
     Io(IoErrorKind),
 }
 

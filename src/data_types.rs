@@ -8,5 +8,6 @@ pub type X25519PublicKeyBytes = [u8; 32];
 pub type X25519SecretKeyBytes = [u8; 32];
 pub type RandomID = [u8; 32];
 pub type MessageID = [u8; 32];
+pub type Blake3Hash = [u8; 32];
 pub type TaiTimestamp = [u8; 32];
 pub type TimestampSeconds = i64;

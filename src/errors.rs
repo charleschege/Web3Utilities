@@ -50,6 +50,7 @@ pub enum UtilitiesError {
     /// This operation is currently not supported
     Tai64InvalidEarlierDuaration,
     UnsupportedBase58Error,
+    Io(IoErrorKind),
 }
 
 #[cfg(feature = "tai64")]
@@ -109,4 +110,55 @@ impl From<hex::FromHexError> for UtilitiesError {
             }
         }
     }
+}
+
+impl From<std::io::Error> for UtilitiesError {
+    fn from(error: std::io::Error) -> Self {
+        use std::io::ErrorKind;
+
+        match error.kind() {
+            ErrorKind::NotFound => UtilitiesError::Io(IoErrorKind::NotFound),
+            ErrorKind::PermissionDenied => UtilitiesError::Io(IoErrorKind::PermissionDenied),
+            ErrorKind::ConnectionRefused => UtilitiesError::Io(IoErrorKind::ConnectionRefused),
+            ErrorKind::ConnectionReset => UtilitiesError::Io(IoErrorKind::ConnectionReset),
+            ErrorKind::ConnectionAborted => UtilitiesError::Io(IoErrorKind::ConnectionAborted),
+            ErrorKind::NotConnected => UtilitiesError::Io(IoErrorKind::NotConnected),
+            ErrorKind::AddrInUse => UtilitiesError::Io(IoErrorKind::AddrInUse),
+            ErrorKind::AddrNotAvailable => UtilitiesError::Io(IoErrorKind::AddrNotAvailable),
+            ErrorKind::BrokenPipe => UtilitiesError::Io(IoErrorKind::BrokenPipe),
+            ErrorKind::AlreadyExists => UtilitiesError::Io(IoErrorKind::AlreadyExists),
+            ErrorKind::WouldBlock => UtilitiesError::Io(IoErrorKind::WouldBlock),
+            ErrorKind::InvalidInput => UtilitiesError::Io(IoErrorKind::InvalidInput),
+            ErrorKind::InvalidData => UtilitiesError::Io(IoErrorKind::InvalidData),
+            ErrorKind::TimedOut => UtilitiesError::Io(IoErrorKind::TimedOut),
+            ErrorKind::WriteZero => UtilitiesError::Io(IoErrorKind::WriteZero),
+            ErrorKind::Interrupted => UtilitiesError::Io(IoErrorKind::Interrupted),
+            ErrorKind::Other => UtilitiesError::Io(IoErrorKind::Other),
+            ErrorKind::UnexpectedEof => UtilitiesError::Io(IoErrorKind::UnexpectedEof),
+            _ => UtilitiesError::Io(IoErrorKind::Unsupported),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, BorshSerialize, BorshDeserialize)]
+pub enum IoErrorKind {
+    NotFound,
+    PermissionDenied,
+    ConnectionRefused,
+    ConnectionReset,
+    ConnectionAborted,
+    NotConnected,
+    AddrInUse,
+    AddrNotAvailable,
+    BrokenPipe,
+    AlreadyExists,
+    WouldBlock,
+    InvalidInput,
+    InvalidData,
+    TimedOut,
+    WriteZero,
+    Interrupted,
+    Other,
+    UnexpectedEof,
+    Unsupported,
 }

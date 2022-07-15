@@ -10,6 +10,12 @@ pub use errors::*;
 mod data_types;
 pub use data_types::*;
 
+mod threshold;
+pub use threshold::*;
+
+mod voting;
+pub use voting::*;
+
 #[cfg(feature = "random")]
 mod random;
 #[cfg(feature = "random")]

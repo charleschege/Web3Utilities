@@ -60,11 +60,11 @@ impl fmt::Debug for Sr25519Signature {
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct X25519Public(pub [u8; 32]);
 
-#[cfg(feature = "base58")]
+#[cfg(feature = "hex")]
 impl fmt::Debug for X25519Public {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("X25519Public")
-            .field(&bs58::encode(&self.0).into_string())
+            .field(&hex::encode(&self.0))
             .finish()
     }
 }

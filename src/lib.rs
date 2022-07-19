@@ -4,7 +4,7 @@ pub use cryptography::*;
 mod formats;
 pub use formats::*;
 
-mod errors;
+pub mod errors;
 pub use errors::*;
 
 mod data_types;

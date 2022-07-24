@@ -16,6 +16,17 @@ pub type TimestampSeconds = i64;
 pub struct TaiTimestamp(pub TaiTimestampBytes);
 
 #[cfg(feature = "tai64")]
+impl TaiTimestamp {
+    pub fn now() -> Self {
+        TaiTimestamp(tai64::Tai64N::now().to_bytes())
+    }
+
+    pub fn new() -> Self {
+        TaiTimestamp(tai64::Tai64N::UNIX_EPOCH.to_bytes())
+    }
+}
+
+#[cfg(feature = "tai64")]
 impl fmt::Debug for TaiTimestamp {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use monotonic_time::DateTime;
@@ -37,6 +48,12 @@ impl fmt::Debug for TaiTimestamp {
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Ed25519Public(pub [u8; 32]);
 
+impl Default for Ed25519Public {
+    fn default() -> Self {
+        Ed25519Public([0u8; 32])
+    }
+}
+
 #[cfg(feature = "base58")]
 impl fmt::Debug for Ed25519Public {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -49,6 +66,12 @@ impl fmt::Debug for Ed25519Public {
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Ed25519Signature(pub [u8; 64]);
 
+impl Default for Ed25519Signature {
+    fn default() -> Self {
+        Ed25519Signature([0u8; 64])
+    }
+}
+
 #[cfg(feature = "base58")]
 impl fmt::Debug for Ed25519Signature {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -59,6 +82,12 @@ impl fmt::Debug for Ed25519Signature {
 }
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Sr25519Public(pub [u8; 32]);
+
+impl Default for Sr25519Public {
+    fn default() -> Self {
+        Sr25519Public([0u8; 32])
+    }
+}
 
 #[cfg(feature = "base58")]
 impl fmt::Debug for Sr25519Public {
@@ -72,6 +101,12 @@ impl fmt::Debug for Sr25519Public {
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Sr25519Signature(pub [u8; 64]);
 
+impl Default for Sr25519Signature {
+    fn default() -> Self {
+        Sr25519Signature([0u8; 64])
+    }
+}
+
 #[cfg(feature = "base58")]
 impl fmt::Debug for Sr25519Signature {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -83,6 +118,12 @@ impl fmt::Debug for Sr25519Signature {
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct X25519Public(pub [u8; 32]);
+
+impl Default for X25519Public {
+    fn default() -> Self {
+        X25519Public([0u8; 32])
+    }
+}
 
 #[cfg(feature = "hex")]
 impl fmt::Debug for X25519Public {

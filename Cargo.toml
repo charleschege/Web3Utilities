@@ -1,6 +1,6 @@
 [package]
 name = "web3utilities"
-version = "1.4.0"
+version = "1.5.0"
 authors = ["Charles Chege <charleschege@protonmail.ch>"]
 license = "MPL-2.0"
 edition = "2021"
@@ -14,6 +14,7 @@ ed25519-dalek = { version = "1.0.1", default-features = false, features = [
     "u32_backend",
 ], optional = true }
 hex = { version = "0.4.3", optional = true }
+monotonic-time = "1.0.2"
 nanorand = { version = "0.7.0", features = [
     "chacha",
     "zeroize",

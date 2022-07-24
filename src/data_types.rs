@@ -3,12 +3,36 @@ use borsh::{BorshDeserialize, BorshSerialize};
 #[cfg(feature = "common")]
 use core::fmt;
 
+use crate::Utilities;
+
 pub type ByteArray32 = [u8; 32];
 pub type RandomID = [u8; 32];
 pub type MessageID = [u8; 32];
 pub type Blake3Hash = [u8; 32];
-pub type TaiTimestamp = [u8; 12];
+pub type TaiTimestampBytes = [u8; 12];
 pub type TimestampSeconds = i64;
+
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+pub struct TaiTimestamp(pub TaiTimestampBytes);
+
+#[cfg(feature = "tai64")]
+impl fmt::Debug for TaiTimestamp {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use monotonic_time::DateTime;
+
+        match Utilities::bytes_to_tai64n(&self.0) {
+            Ok(timestamp) => match Utilities::tai64_get_secs(timestamp) {
+                Ok(duration) => {
+                    let mut datetime = DateTime::new();
+
+                    write!(f, "{}", datetime.to_datetime(duration))
+                }
+                Err(error) => write!(f, "{:?}", error),
+            },
+            Err(error) => write!(f, "{:?}", error),
+        }
+    }
+}
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Ed25519Public(pub [u8; 32]);

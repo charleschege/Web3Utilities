@@ -1,7 +1,7 @@
 #[cfg(feature = "common")]
 use crate::{Utilities, UtilitiesError, UtilitiesResult};
 
-#[cfg(feature = "systemtime")]
+#[cfg(feature = "tai64")]
 use std::time::SystemTime;
 
 #[cfg(feature = "common")]
@@ -75,6 +75,11 @@ impl Utilities {
     }
 
     #[cfg(feature = "tai64")]
+    pub fn systemtime_to_tai64(value: &SystemTime) -> tai64::Tai64N {
+        tai64::Tai64N::from_system_time(value)
+    }
+
+    #[cfg(feature = "tai64")]
     pub fn tai64_get_secs(value: tai64::Tai64N) -> UtilitiesResult<u64> {
         match value.duration_since(&tai64::Tai64N::UNIX_EPOCH) {
             Ok(duration) => Ok(duration.as_secs()),
@@ -98,7 +103,7 @@ impl Utilities {
         }
     }
 
-    #[cfg(feature = "systemtime")]
+    #[cfg(feature = "tai64")]
     pub fn systemtime_get_secs(value: SystemTime) -> UtilitiesResult<u64> {
         use std::time::UNIX_EPOCH;
 
@@ -108,7 +113,7 @@ impl Utilities {
         }
     }
 
-    #[cfg(feature = "systemtime")]
+    #[cfg(feature = "tai64")]
     pub fn systemtime_get_millis(value: SystemTime) -> UtilitiesResult<u128> {
         use std::time::UNIX_EPOCH;
 
@@ -118,7 +123,7 @@ impl Utilities {
         }
     }
 
-    #[cfg(feature = "systemtime")]
+    #[cfg(feature = "tai64")]
     pub fn systemtime_get_nanos(value: SystemTime) -> UtilitiesResult<u128> {
         use std::time::UNIX_EPOCH;
 

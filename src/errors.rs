@@ -44,7 +44,7 @@ pub enum UtilitiesError {
     Base58NonAsciiCharacter {
         index: usize,
     },
-    #[cfg(feature = "systemtime")]
+    #[cfg(feature = "tai64")]
     /// Utilizes std::time
     SystemtimeInvalidEarlierDuaration,
     #[cfg(feature = "tai64")]

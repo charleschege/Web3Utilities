@@ -1,6 +1,9 @@
 #[cfg(feature = "common")]
 use crate::{Utilities, UtilitiesError, UtilitiesResult};
 
+#[cfg(feature = "systemtime")]
+use std::time::SystemTime;
+
 #[cfg(feature = "common")]
 impl Utilities {
     pub fn to_12byte_array(bytes: &[u8]) -> UtilitiesResult<[u8; 12]> {
@@ -92,6 +95,36 @@ impl Utilities {
         match value.duration_since(&tai64::Tai64N::UNIX_EPOCH) {
             Ok(duration) => Ok(duration.as_nanos()),
             Err(_) => Err(UtilitiesError::Tai64InvalidEarlierDuaration),
+        }
+    }
+
+    #[cfg(feature = "systemtime")]
+    pub fn systemtime_get_secs(value: SystemTime) -> UtilitiesResult<u64> {
+        use std::time::UNIX_EPOCH;
+
+        match value.duration_since(UNIX_EPOCH) {
+            Ok(duration) => Ok(duration.as_secs()),
+            Err(_) => Err(UtilitiesError::SystemtimeInvalidEarlierDuaration),
+        }
+    }
+
+    #[cfg(feature = "systemtime")]
+    pub fn systemtime_get_millis(value: SystemTime) -> UtilitiesResult<u128> {
+        use std::time::UNIX_EPOCH;
+
+        match value.duration_since(UNIX_EPOCH) {
+            Ok(duration) => Ok(duration.as_millis()),
+            Err(_) => Err(UtilitiesError::SystemtimeInvalidEarlierDuaration),
+        }
+    }
+
+    #[cfg(feature = "systemtime")]
+    pub fn systemtime_get_nanos(value: SystemTime) -> UtilitiesResult<u128> {
+        use std::time::UNIX_EPOCH;
+
+        match value.duration_since(UNIX_EPOCH) {
+            Ok(duration) => Ok(duration.as_nanos()),
+            Err(_) => Err(UtilitiesError::SystemtimeInvalidEarlierDuaration),
         }
     }
 }

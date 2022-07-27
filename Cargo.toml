@@ -27,7 +27,7 @@ tai64 = { version = "4.0.0", optional = true }
 
 [features]
 default = ["common"]
-full = ["common", "base58", "hex", "ed25519", "sr25519", "random", "tai64"]
+full = ["common", "base58", "hex", "ed25519", "sr25519", "random", "tai64", "systemtime"]
 base58 = ["dep:bs58", "common"]
 hex = ["dep:hex", "common"]
 ed25519 = ["dep:ed25519-dalek", "common"]
@@ -35,3 +35,4 @@ sr25519 = ["dep:schnorrkel", "common"]
 random = ["dep:nanorand", "common"]
 common = []
 tai64 = ["dep:tai64"]
+systemtime = []

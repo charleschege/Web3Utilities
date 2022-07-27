@@ -44,11 +44,18 @@ pub enum UtilitiesError {
     Base58NonAsciiCharacter {
         index: usize,
     },
+    #[cfg(feature = "systemtime")]
+    /// Utilizes std::time
+    SystemtimeInvalidEarlierDuaration,
+    #[cfg(feature = "tai64")]
     Tai64LengthInvalid,
+    #[cfg(feature = "tai64")]
     Tai64NanosInvalid,
+    #[cfg(feature = "tai64")]
     /// The duration provided is smaller than the UNIX_EPOCH.
     /// This operation is currently not supported
     Tai64InvalidEarlierDuaration,
+    #[cfg(feature = "base58")]
     UnsupportedBase58Error,
     InvalidEd25519Signature,
     /// The bytes provided could not be encrypted

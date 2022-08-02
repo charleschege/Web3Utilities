@@ -166,7 +166,6 @@ impl Default for Secret32Bytes {
     }
 }
 
-#[cfg(feature = "hex")]
 impl fmt::Debug for Secret32Bytes {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("Secret32Bytes").field(&"[REDACTED]").finish()

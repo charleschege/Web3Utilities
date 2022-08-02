@@ -1,4 +1,5 @@
 use borsh::{BorshDeserialize, BorshSerialize};
+use zeroize::{Zeroize, ZeroizeOnDrop};
 
 #[cfg(feature = "common")]
 use core::fmt;
@@ -131,6 +132,44 @@ impl fmt::Debug for X25519Public {
         f.debug_tuple("X25519Public")
             .field(&hex::encode(&self.0))
             .finish()
+    }
+}
+
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+pub struct Secret32Bytes(pub [u8; 32]);
+
+impl Zeroize for Secret32Bytes {
+    fn zeroize(&mut self) {
+        self.0 = Secret32Bytes::default().0;
+    }
+}
+
+impl ZeroizeOnDrop for Secret32Bytes {}
+
+#[cfg(feature = "debug_secret")]
+impl Secret32Bytes {
+    pub fn dangerous_debug(&self) -> String {
+        hex::encode(&self.0)
+    }
+}
+
+#[cfg(feature = "clonable_secret")]
+impl Clone for Secret32Bytes {
+    fn clone(&self) -> Self {
+        Secret32Bytes(self.0)
+    }
+}
+
+impl Default for Secret32Bytes {
+    fn default() -> Self {
+        Secret32Bytes([0u8; 32])
+    }
+}
+
+#[cfg(feature = "hex")]
+impl fmt::Debug for Secret32Bytes {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_tuple("Secret32Bytes").field(&"[REDACTED]").finish()
     }
 }
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]

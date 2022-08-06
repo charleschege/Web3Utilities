@@ -28,6 +28,13 @@ impl TaiTimestamp {
 }
 
 #[cfg(feature = "tai64")]
+impl Default for TaiTimestamp {
+    fn default() -> Self {
+        TaiTimestamp::new()
+    }
+}
+
+#[cfg(feature = "tai64")]
 impl fmt::Debug for TaiTimestamp {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use monotonic_time::DateTime;

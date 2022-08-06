@@ -16,6 +16,24 @@ pub use threshold::*;
 mod voting;
 pub use voting::*;
 
+#[cfg(feature = "hex")]
+pub use hex;
+
+#[cfg(feature = "base58")]
+pub use bs58;
+
+#[cfg(feature = "ed25519")]
+pub use ed25519_dalek;
+
+#[cfg(feature = "sr25519")]
+pub use schnorrkel;
+
+#[cfg(feature = "random")]
+pub use nanorand;
+
+#[cfg(feature = "tai64")]
+pub use tai64;
+
 #[cfg(feature = "random")]
 mod random;
 #[cfg(feature = "random")]

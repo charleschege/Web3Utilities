@@ -16,6 +16,12 @@ pub type TimestampSeconds = i64;
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Blake3Hash(pub Blake3HashBytes);
 
+impl Default for Blake3Hash {
+    fn default() -> Self {
+        Blake3Hash([0u8; 32])
+    }
+}
+
 #[cfg(feature = "hex")]
 impl fmt::Debug for Blake3Hash {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

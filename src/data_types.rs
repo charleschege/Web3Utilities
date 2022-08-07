@@ -9,9 +9,21 @@ use crate::Utilities;
 pub type ByteArray32 = [u8; 32];
 pub type RandomID = [u8; 32];
 pub type MessageID = [u8; 32];
-pub type Blake3Hash = [u8; 32];
+pub type Blake3HashBytes = [u8; 32];
 pub type TaiTimestampBytes = [u8; 12];
 pub type TimestampSeconds = i64;
+
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+pub struct Blake3Hash(pub Blake3HashBytes);
+
+#[cfg(feature = "hex")]
+impl fmt::Debug for Blake3Hash {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_tuple("Blake3Hash")
+            .field(&hex::encode(&self.0))
+            .finish()
+    }
+}
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct TaiTimestamp(pub TaiTimestampBytes);

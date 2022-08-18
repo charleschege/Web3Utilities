@@ -7,15 +7,40 @@ use core::fmt;
 
 use crate::Utilities;
 
+/// An array of 12 bytes.
+/// This does not implement hex or base58 fmt::Debug  or constant time equality checks.
+pub type ByteArray12 = [u8; 12];
+/// An array of 16 bytes common for ChaCha symmetric encryption AEAD tags.
+/// This does not implement hex or base58 fmt::Debug  or constant time equality checks.
+pub type ByteArray16 = [u8; 16];
+/// An array of 24 bytes common for 192 bit cryptographic keys.
+/// This does not implement hex or base58 fmt::Debug  or constant time equality checks.
+pub type ByteArray24 = [u8; 24];
+/// An array of 32 bytes common for 256 bit private and public keys.
+/// This does not implement hex or base58 fmt::Debug  or constant time equality checks.
 pub type ByteArray32 = [u8; 32];
-pub type RandomID = [u8; 32];
-pub type MessageID = [u8; 32];
-pub type Blake3HashBytes = [u8; 32];
-pub type TaiTimestampBytes = [u8; 12];
-pub type TimestampSeconds = i64;
+/// An array of 64 bytes common for 512 bit private and public keys.
+/// This does not implement hex or base58 fmt::Debug  or constant time equality checks.
+pub type ByteArray64 = [u8; 64];
+/// An array of 128 bytes common for 1024 bit private and public keys.
+/// This does not implement hex or base58 fmt::Debug  or constant time equality checks.
+pub type ByteArray128 = [u8; 128];
+/// An array of 256 bytes common for 2048 bit private and public keys.
+/// This does not implement hex or base58 fmt::Debug  or constant time equality checks.
+pub type ByteArray256 = [u8; 256];
 
+/// Common Unix timestamps are represented as u64
+pub type UnixTimestamp = u64;
+/// Common Unix timestamps are represented as i64
+pub type UnixTimestampSigned = i64;
+
+/// A representation of Blake3 hash byte representation with
+/// default constant time equality checks, hex `fmt::Debug` and hex `fmt::Display`,
+/// and an implementation for Borsh encoding that ensure
+/// no two binary representations that deserialize into the same object
+/// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
-pub struct Blake3Hash(pub Blake3HashBytes);
+pub struct Blake3Hash(pub ByteArray32);
 
 impl PartialEq for Blake3Hash {
     fn eq(&self, other: &Self) -> bool {
@@ -40,8 +65,13 @@ impl fmt::Debug for Blake3Hash {
     }
 }
 
+/// A representation of 12 byte Tai64N monotonic timestamp byte with
+/// default constant time equality checks, hex `fmt::Debug` and hex `fmt::Display`,
+/// and an implementation for Borsh encoding that ensure
+/// no two binary representations that deserialize into the same object
+/// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
-pub struct TaiTimestamp(pub TaiTimestampBytes);
+pub struct TaiTimestamp(pub ByteArray12);
 
 impl PartialEq for TaiTimestamp {
     fn eq(&self, other: &Self) -> bool {
@@ -53,10 +83,12 @@ impl Eq for TaiTimestamp {}
 
 #[cfg(feature = "tai64")]
 impl TaiTimestamp {
+    /// Get the byte representation of a Tai64N timestamp representing the current system time
     pub fn now() -> Self {
         TaiTimestamp(tai64::Tai64N::now().to_bytes())
     }
 
+    /// Get the default Tai64N UNIX EPOCH in bytes
     pub fn new() -> Self {
         TaiTimestamp(tai64::Tai64N::UNIX_EPOCH.to_bytes())
     }
@@ -88,6 +120,11 @@ impl fmt::Debug for TaiTimestamp {
     }
 }
 
+/// A representation of a 32 byte Ed25519 public key with
+/// default constant time equality checks, hex `fmt::Debug` and hex `fmt::Display`,
+/// and an implementation for Borsh encoding that ensure
+/// no two binary representations that deserialize into the same object
+/// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Ed25519Public(pub [u8; 32]);
 
@@ -114,6 +151,11 @@ impl fmt::Debug for Ed25519Public {
     }
 }
 
+/// A representation of a 64 byte Ed25519 signature with
+/// default constant time equality checks, hex `fmt::Debug` and hex `fmt::Display`,
+/// and an implementation for Borsh encoding that ensure
+/// no two binary representations that deserialize into the same object
+/// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Ed25519Signature(pub [u8; 64]);
 
@@ -139,6 +181,12 @@ impl fmt::Debug for Ed25519Signature {
             .finish()
     }
 }
+
+/// A representation of a 32 byte Sr25519 public key with
+/// default constant time equality checks, hex `fmt::Debug` and hex `fmt::Display`,
+/// and an implementation for Borsh encoding that ensure
+/// no two binary representations that deserialize into the same object
+/// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Sr25519Public(pub [u8; 32]);
 
@@ -165,6 +213,11 @@ impl fmt::Debug for Sr25519Public {
     }
 }
 
+/// A representation of a 64 byte Sr25519 signature with
+/// default constant time equality checks, hex `fmt::Debug` and hex `fmt::Display`,
+/// and an implementation for Borsh encoding that ensure
+/// no two binary representations that deserialize into the same object
+/// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Sr25519Signature(pub [u8; 64]);
 
@@ -191,6 +244,11 @@ impl fmt::Debug for Sr25519Signature {
     }
 }
 
+/// A representation of a 32 byte X25519 public key with
+/// default constant time equality checks, hex `fmt::Debug` and hex `fmt::Display`,
+/// and an implementation for Borsh encoding that ensure
+/// no two binary representations that deserialize into the same object
+/// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct X25519Public(pub [u8; 32]);
 
@@ -217,6 +275,12 @@ impl fmt::Debug for X25519Public {
     }
 }
 
+/// A representation of a 32 byte secret key with
+/// default constant time equality checks, hex `fmt::Debug` and hex `fmt::Display`,
+/// implementation for zeroize for zeroing memory when the value is dropped
+/// and an implementation for Borsh encoding that ensure
+/// no two binary representations that deserialize into the same object
+/// and a possibly smaller code size compared to serde binary representations.
 #[derive(PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Secret32Bytes(pub [u8; 32]);
 
@@ -238,6 +302,8 @@ impl ZeroizeOnDrop for Secret32Bytes {}
 
 #[cfg(feature = "debug_secret")]
 impl Secret32Bytes {
+    /// Debug the secret key. This is a dangerous operation since
+    /// it returns the hex of the secret key which can be logged
     pub fn dangerous_debug(&self) -> String {
         hex::encode(&self.0)
     }
@@ -261,8 +327,14 @@ impl fmt::Debug for Secret32Bytes {
         f.debug_tuple("Secret32Bytes").field(&"[REDACTED]").finish()
     }
 }
+
+/// A representation of a 12 byte ChaCha AEAD Nonce
+/// default constant time equality checks, hex `fmt::Debug` and hex `fmt::Display`,
+/// and an implementation for Borsh encoding that ensure
+/// no two binary representations that deserialize into the same object
+/// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
-pub struct AeadNonce(pub [u8; 12]);
+pub struct AeadNonce(pub ByteArray12);
 
 impl PartialEq for AeadNonce {
     fn eq(&self, other: &Self) -> bool {
@@ -281,8 +353,13 @@ impl fmt::Debug for AeadNonce {
     }
 }
 
+/// A representation of a 24 byte ChaCha AEAD Extended Nonce
+/// default constant time equality checks, hex `fmt::Debug` and hex `fmt::Display`,
+/// and an implementation for Borsh encoding that ensure
+/// no two binary representations that deserialize into the same object
+/// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
-pub struct AeadXNonce(pub [u8; 24]);
+pub struct AeadXNonce(pub ByteArray24);
 
 impl PartialEq for AeadXNonce {
     fn eq(&self, other: &Self) -> bool {
@@ -301,8 +378,13 @@ impl fmt::Debug for AeadXNonce {
     }
 }
 
+/// A representation of a 16 byte ChaCha AEAD Tag
+/// default constant time equality checks, hex `fmt::Debug` and hex `fmt::Display`,
+/// and an implementation for Borsh encoding that ensure
+/// no two binary representations that deserialize into the same object
+/// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
-pub struct AeadTag(pub [u8; 16]);
+pub struct AeadTag(pub ByteArray16);
 
 impl PartialEq for AeadTag {
     fn eq(&self, other: &Self) -> bool {

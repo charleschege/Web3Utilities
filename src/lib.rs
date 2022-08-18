@@ -1,8 +1,6 @@
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]
-
-//! #### `wen3utilities` crate is a library offering commonly used cryptographic and timestamp
-//! data structures common in Web3, asymmetric cryptography, symmetric cryptography and timestamps.
+#![doc = include_str!("../README.md")]
 
 mod cryptography;
 /// Implement `fmt::Debug` for cryptography structures

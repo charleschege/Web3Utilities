@@ -20,10 +20,11 @@ nanorand = { version = "0.7", optional = true, default-features = false, feature
     "chacha",
     "rdseed",
 ] }
-ed25519-dalek = { version = "1", optional = true, default-features = false, features = [
+ed25519-dalek = { version = "1.0.1", optional = true, default-features = false, features = [
     "u64_backend",
 ] }
 zeroize = "1.5.7"
+constant_time_eq = "0.2.4"
 
 [features]
 default = ["common"]

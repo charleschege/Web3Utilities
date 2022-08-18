@@ -1,19 +1,31 @@
+#![forbid(unsafe_code)]
+#![deny(missing_docs)]
+
+//! #### `wen3utilities` crate is a library offering commonly used cryptographic and timestamp
+//! data structures common in Web3, asymmetric cryptography, symmetric cryptography and timestamps.
+
 mod cryptography;
+/// Implement `fmt::Debug` for cryptography structures
 pub use cryptography::*;
 
 mod formats;
+/// Conversions to common cryptographic byte arrays
 pub use formats::*;
 
-pub mod errors;
+mod errors;
+/// Errors encountered performing operations using this crate
 pub use errors::*;
 
 mod data_types;
+/// Cryptographic and Timestamp data types
 pub use data_types::*;
 
 mod threshold;
+/// Create or calculate a threshold from a list
 pub use threshold::*;
 
 mod voting;
+/// Voting structures and functions for an election
 pub use voting::*;
 
 #[cfg(feature = "hex")]
@@ -39,6 +51,7 @@ mod random;
 #[cfg(feature = "random")]
 pub use random::*;
 
+/// `Utilities` struct is used to group common methods for manipulation of bytes
 #[cfg(feature = "common")]
 pub struct Utilities;
 
@@ -62,6 +75,25 @@ mod sanity_tests {
         assert_eq!(
             Err(UtilitiesError::LengthGreaterThan12Bytes),
             Utilities::to_12byte_array(&byte24)
+        );
+    }
+
+    #[test]
+    fn tests_16byte() {
+        let byte8 = [0u8; 8];
+        let byte16 = [0u8; 16];
+        let byte24 = [1u8; 24];
+
+        assert!(Utilities::to_16byte_array(&byte16).is_ok());
+        assert!(Utilities::to_12byte_array(&byte24).is_err());
+        assert_eq!(Ok(byte16), Utilities::to_16byte_array(&byte16));
+        assert_eq!(
+            Err(UtilitiesError::LengthLessThan16Bytes),
+            Utilities::to_16byte_array(&byte8)
+        );
+        assert_eq!(
+            Err(UtilitiesError::LengthGreaterThan16Bytes),
+            Utilities::to_16byte_array(&byte24)
         );
     }
 
@@ -120,6 +152,20 @@ mod sanity_tests {
         assert_eq!(
             Err(UtilitiesError::LengthGreaterThan64Bytes),
             Utilities::to_64byte_array(&byte65)
+        );
+    }
+
+    #[test]
+    fn test_128byte() {
+        let byte32 = [2u8; 32];
+        let byte128 = [3u8; 128];
+
+        assert!(Utilities::to_128byte_array(&byte128).is_ok());
+        assert!(Utilities::to_128byte_array(&byte32).is_err());
+        assert_eq!(Ok(byte128), Utilities::to_128byte_array(&byte128));
+        assert_eq!(
+            Err(UtilitiesError::LengthLessThan128Bytes),
+            Utilities::to_128byte_array(&byte32)
         );
     }
 

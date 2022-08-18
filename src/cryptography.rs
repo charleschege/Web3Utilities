@@ -13,6 +13,7 @@ use schnorrkel::{
 
 #[cfg(feature = "common")]
 impl Utilities {
+    /// Convert some bytes to an `ed25519_dalek::Keypair`
     #[cfg(feature = "ed25519")]
     pub fn to_ed25519_keypair(bytes: &[u8]) -> UtilitiesResult<Ed25519Keypair> {
         match Ed25519Keypair::from_bytes(bytes) {
@@ -21,6 +22,7 @@ impl Utilities {
         }
     }
 
+    /// Convert some bytes to an `ed25519_dalek::PublicKey`
     #[cfg(feature = "ed25519")]
     pub fn to_ed25519_publickey(bytes: &[u8]) -> UtilitiesResult<Ed25519PublicKey> {
         match Ed25519PublicKey::from_bytes(bytes) {
@@ -29,6 +31,7 @@ impl Utilities {
         }
     }
 
+    /// Convert some bytes to an `ed25519_dalek::Signature`
     #[cfg(feature = "ed25519")]
     pub fn to_ed25519_sig(bytes: &[u8]) -> UtilitiesResult<Ed25519Signature> {
         match Ed25519Signature::from_bytes(bytes) {
@@ -37,6 +40,7 @@ impl Utilities {
         }
     }
 
+    /// Check if an `ed25519_dalek::Keypair` was used to sign a message.
     #[cfg(feature = "ed25519")]
     pub fn is_signer_ed25519(
         public_key: &Ed25519PublicKey,
@@ -51,6 +55,7 @@ impl Utilities {
         }
     }
 
+    /// Convert some bytes to an `schnorrkel::Keypair`
     #[cfg(feature = "sr25519")]
     pub fn to_sr25519_keypair(bytes: &[u8]) -> UtilitiesResult<Sr25519Keypair> {
         match Sr25519Keypair::from_bytes(bytes) {
@@ -59,6 +64,7 @@ impl Utilities {
         }
     }
 
+    /// Convert some bytes to an `schnorrkel::PublicKey`
     #[cfg(feature = "sr25519")]
     pub fn to_sr25519_publickey(bytes: &[u8]) -> UtilitiesResult<Sr25519PublicKey> {
         match Sr25519PublicKey::from_bytes(bytes) {
@@ -67,6 +73,7 @@ impl Utilities {
         }
     }
 
+    /// Convert some bytes to an `schnorrkel::Signature`
     #[cfg(feature = "sr25519")]
     pub fn to_sr25519_sig(bytes: &[u8]) -> UtilitiesResult<Sr25519Signature> {
         match Sr25519Signature::from_bytes(bytes) {

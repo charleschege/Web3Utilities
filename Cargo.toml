@@ -9,6 +9,8 @@ homepage = "https://github.com/charleschege/Web3Utilities.git"
 repository = "https://github.com/charleschege/Web3Utilities.git"
 keywords = ["web3"]
 categories = ["encoding", "parsing"]
+description = "Commonly used cryptograpgic data structures in Web3"
+
 [badges]
 maintenance = { status = "actively-developed" }
 

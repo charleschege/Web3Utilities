@@ -1,13 +1,10 @@
-#[cfg(feature = "common")]
 use borsh::{BorshDeserialize, BorshSerialize};
 
 /// This data structure  implements From <T> for error types of the
 /// dependencies of this crate
-#[cfg(feature = "common")]
 pub type UtilitiesResult<T> = Result<T, UtilitiesError>;
 
 /// Common Errors
-#[cfg(feature = "common")]
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, BorshSerialize, BorshDeserialize)]
 pub enum UtilitiesError {
     /// The byte length is less than 12 bytes

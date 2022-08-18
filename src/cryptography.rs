@@ -1,5 +1,6 @@
+use crate::Utilities;
 #[cfg(feature = "common")]
-use crate::{Utilities, UtilitiesError, UtilitiesResult};
+use crate::{UtilitiesError, UtilitiesResult};
 
 #[cfg(feature = "ed25519")]
 use ed25519_dalek::{
@@ -11,7 +12,6 @@ use schnorrkel::{
     Keypair as Sr25519Keypair, PublicKey as Sr25519PublicKey, Signature as Sr25519Signature,
 };
 
-#[cfg(feature = "common")]
 impl Utilities {
     /// Convert some bytes to an `ed25519_dalek::Keypair`
     #[cfg(feature = "ed25519")]

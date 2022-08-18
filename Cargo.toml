@@ -1,6 +1,6 @@
 [package]
 name = "web3utilities"
-version = "2.0.0"
+version = "2.0.1"
 authors = ["Charles Chege <charleschege@protonmail.ch>"]
 license = "MPL-2.0"
 edition = "2021"
@@ -36,7 +36,7 @@ zeroize = "1.5.7"
 constant_time_eq = "0.2.4"
 
 [features]
-default = ["common"]
+default = []
 full = [
     "common",
     "base58",
@@ -48,12 +48,12 @@ full = [
     "clonable_secret",
     "debug_secret",
 ]
-base58 = ["dep:bs58", "common"]
-hex = ["dep:hex", "common"]
+base58 = ["dep:bs58"]
+hex = ["dep:hex"]
 ed25519 = ["dep:ed25519-dalek", "common"]
 sr25519 = ["dep:schnorrkel", "common"]
-random = ["dep:nanorand", "common"]
+random = ["dep:nanorand"]
 common = []
 tai64 = ["dep:tai64"]
 clonable_secret = []
-debug_secret = []
+debug_secret = ["dep:hex"]

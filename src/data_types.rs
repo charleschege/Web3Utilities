@@ -2,10 +2,7 @@ use borsh::{BorshDeserialize, BorshSerialize};
 use constant_time_eq::constant_time_eq_n;
 use zeroize::{Zeroize, ZeroizeOnDrop};
 
-#[cfg(feature = "common")]
 use core::fmt;
-
-use crate::Utilities;
 
 /// An array of 12 bytes.
 /// This does not implement hex or base58 fmt::Debug  or constant time equality checks.
@@ -104,6 +101,7 @@ impl Default for TaiTimestamp {
 #[cfg(feature = "tai64")]
 impl fmt::Debug for TaiTimestamp {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use crate::Utilities;
         use monotonic_time::DateTime;
 
         match Utilities::bytes_to_tai64n(&self.0) {

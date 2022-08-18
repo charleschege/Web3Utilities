@@ -9,7 +9,6 @@ pub use cryptography::*;
 mod formats;
 /// Conversions to common cryptographic byte arrays
 pub use formats::*;
-
 mod errors;
 /// Errors encountered performing operations using this crate
 pub use errors::*;
@@ -50,7 +49,6 @@ mod random;
 pub use random::*;
 
 /// `Utilities` struct is used to group common methods for manipulation of bytes
-#[cfg(feature = "common")]
 pub struct Utilities;
 
 #[cfg(test)]

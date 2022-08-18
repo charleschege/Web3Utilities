@@ -1,10 +1,8 @@
-#[cfg(feature = "common")]
 use crate::{Utilities, UtilitiesError, UtilitiesResult};
 
 #[cfg(feature = "tai64")]
 use std::time::SystemTime;
 
-#[cfg(feature = "common")]
 impl Utilities {
     /// Convert some bytes to a 12 byte array
     pub fn to_12byte_array(bytes: &[u8]) -> UtilitiesResult<[u8; 12]> {

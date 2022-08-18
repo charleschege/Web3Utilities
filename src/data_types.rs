@@ -1,4 +1,5 @@
 use borsh::{BorshDeserialize, BorshSerialize};
+use constant_time_eq::constant_time_eq_n;
 use zeroize::{Zeroize, ZeroizeOnDrop};
 
 #[cfg(feature = "common")]
@@ -13,8 +14,16 @@ pub type Blake3HashBytes = [u8; 32];
 pub type TaiTimestampBytes = [u8; 12];
 pub type TimestampSeconds = i64;
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Blake3Hash(pub Blake3HashBytes);
+
+impl PartialEq for Blake3Hash {
+    fn eq(&self, other: &Self) -> bool {
+        constant_time_eq_n(&self.0, &other.0)
+    }
+}
+
+impl Eq for Blake3Hash {}
 
 impl Default for Blake3Hash {
     fn default() -> Self {
@@ -31,8 +40,16 @@ impl fmt::Debug for Blake3Hash {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct TaiTimestamp(pub TaiTimestampBytes);
+
+impl PartialEq for TaiTimestamp {
+    fn eq(&self, other: &Self) -> bool {
+        constant_time_eq_n(&self.0, &other.0)
+    }
+}
+
+impl Eq for TaiTimestamp {}
 
 #[cfg(feature = "tai64")]
 impl TaiTimestamp {
@@ -71,8 +88,16 @@ impl fmt::Debug for TaiTimestamp {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Ed25519Public(pub [u8; 32]);
+
+impl PartialEq for Ed25519Public {
+    fn eq(&self, other: &Self) -> bool {
+        constant_time_eq_n(&self.0, &other.0)
+    }
+}
+
+impl Eq for Ed25519Public {}
 
 impl Default for Ed25519Public {
     fn default() -> Self {
@@ -89,8 +114,16 @@ impl fmt::Debug for Ed25519Public {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Ed25519Signature(pub [u8; 64]);
+
+impl PartialEq for Ed25519Signature {
+    fn eq(&self, other: &Self) -> bool {
+        constant_time_eq_n(&self.0, &other.0)
+    }
+}
+
+impl Eq for Ed25519Signature {}
 
 impl Default for Ed25519Signature {
     fn default() -> Self {
@@ -106,8 +139,16 @@ impl fmt::Debug for Ed25519Signature {
             .finish()
     }
 }
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Sr25519Public(pub [u8; 32]);
+
+impl PartialEq for Sr25519Public {
+    fn eq(&self, other: &Self) -> bool {
+        constant_time_eq_n(&self.0, &other.0)
+    }
+}
+
+impl Eq for Sr25519Public {}
 
 impl Default for Sr25519Public {
     fn default() -> Self {
@@ -124,8 +165,16 @@ impl fmt::Debug for Sr25519Public {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Sr25519Signature(pub [u8; 64]);
+
+impl PartialEq for Sr25519Signature {
+    fn eq(&self, other: &Self) -> bool {
+        constant_time_eq_n(&self.0, &other.0)
+    }
+}
+
+impl Eq for Sr25519Signature {}
 
 impl Default for Sr25519Signature {
     fn default() -> Self {
@@ -142,8 +191,16 @@ impl fmt::Debug for Sr25519Signature {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct X25519Public(pub [u8; 32]);
+
+impl PartialEq for X25519Public {
+    fn eq(&self, other: &Self) -> bool {
+        constant_time_eq_n(&self.0, &other.0)
+    }
+}
+
+impl Eq for X25519Public {}
 
 impl Default for X25519Public {
     fn default() -> Self {
@@ -160,8 +217,16 @@ impl fmt::Debug for X25519Public {
     }
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Secret32Bytes(pub [u8; 32]);
+
+impl PartialEq for Secret32Bytes {
+    fn eq(&self, other: &Self) -> bool {
+        constant_time_eq_n(&self.0, &other.0)
+    }
+}
+
+impl Eq for Secret32Bytes {}
 
 impl Zeroize for Secret32Bytes {
     fn zeroize(&mut self) {
@@ -196,8 +261,16 @@ impl fmt::Debug for Secret32Bytes {
         f.debug_tuple("Secret32Bytes").field(&"[REDACTED]").finish()
     }
 }
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct AeadNonce(pub [u8; 12]);
+
+impl PartialEq for AeadNonce {
+    fn eq(&self, other: &Self) -> bool {
+        constant_time_eq_n(&self.0, &other.0)
+    }
+}
+
+impl Eq for AeadNonce {}
 
 #[cfg(feature = "hex")]
 impl fmt::Debug for AeadNonce {
@@ -208,8 +281,16 @@ impl fmt::Debug for AeadNonce {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct AeadXNonce(pub [u8; 24]);
+
+impl PartialEq for AeadXNonce {
+    fn eq(&self, other: &Self) -> bool {
+        constant_time_eq_n(&self.0, &other.0)
+    }
+}
+
+impl Eq for AeadXNonce {}
 
 #[cfg(feature = "hex")]
 impl fmt::Debug for AeadXNonce {
@@ -220,8 +301,16 @@ impl fmt::Debug for AeadXNonce {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct AeadTag(pub [u8; 16]);
+
+impl PartialEq for AeadTag {
+    fn eq(&self, other: &Self) -> bool {
+        constant_time_eq_n(&self.0, &other.0)
+    }
+}
+
+impl Eq for AeadTag {}
 
 #[cfg(feature = "hex")]
 impl fmt::Debug for AeadTag {

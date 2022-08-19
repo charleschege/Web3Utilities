@@ -1,10 +1,10 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use constant_time_eq::constant_time_eq_n;
+use core::{
+    fmt,
+    hash::{Hash, Hasher},
+};
 use zeroize::{Zeroize, ZeroizeOnDrop};
-
-use core::fmt;
-
-use crate::UtilitiesResult;
 
 /// An array of 12 bytes.
 /// This does not implement hex or base58 fmt::Debug  or constant time equality checks.
@@ -38,7 +38,7 @@ pub type UnixTimestampSigned = i64;
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, Default, PartialOrd, Ord, BorshDeserialize, BorshSerialize)]
 pub struct Blake3Hash(pub ByteArray32);
 
 impl Blake3Hash {
@@ -63,9 +63,9 @@ impl PartialEq for Blake3Hash {
 
 impl Eq for Blake3Hash {}
 
-impl Default for Blake3Hash {
-    fn default() -> Self {
-        Blake3Hash([0u8; 32])
+impl Hash for Blake3Hash {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
     }
 }
 
@@ -81,13 +81,13 @@ impl fmt::Debug for Blake3Hash {
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, PartialOrd, Ord, BorshDeserialize, BorshSerialize)]
 pub struct TaiTimestamp(pub ByteArray12);
 
 impl TaiTimestamp {
     /// Convert to a human readable data and time as a`String`primitive
     #[cfg(feature = "tai64")]
-    pub fn to_datetime(&self) -> UtilitiesResult<String> {
+    pub fn to_datetime(&self) -> crate::UtilitiesResult<String> {
         use crate::Utilities;
         use monotonic_time::DateTime;
 
@@ -120,6 +120,12 @@ impl PartialEq for TaiTimestamp {
 }
 
 impl Eq for TaiTimestamp {}
+
+impl Hash for TaiTimestamp {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
+    }
+}
 
 #[cfg(feature = "tai64")]
 impl TaiTimestamp {
@@ -156,7 +162,7 @@ impl fmt::Debug for TaiTimestamp {
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, Default, PartialOrd, Ord, BorshDeserialize, BorshSerialize)]
 pub struct Ed25519Public(pub [u8; 32]);
 
 impl Ed25519Public {
@@ -188,9 +194,9 @@ impl PartialEq for Ed25519Public {
 
 impl Eq for Ed25519Public {}
 
-impl Default for Ed25519Public {
-    fn default() -> Self {
-        Ed25519Public([0u8; 32])
+impl Hash for Ed25519Public {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
     }
 }
 
@@ -208,7 +214,7 @@ impl fmt::Debug for Ed25519Public {
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, PartialOrd, Ord, BorshDeserialize, BorshSerialize)]
 pub struct Ed25519Signature(pub [u8; 64]);
 
 impl Ed25519Signature {
@@ -240,6 +246,12 @@ impl PartialEq for Ed25519Signature {
 
 impl Eq for Ed25519Signature {}
 
+impl Hash for Ed25519Signature {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
+    }
+}
+
 impl Default for Ed25519Signature {
     fn default() -> Self {
         Ed25519Signature([0u8; 64])
@@ -261,7 +273,7 @@ impl fmt::Debug for Ed25519Signature {
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, Default, PartialOrd, Ord, BorshDeserialize, BorshSerialize)]
 pub struct Sr25519Public(pub [u8; 32]);
 
 impl Sr25519Public {
@@ -293,9 +305,9 @@ impl PartialEq for Sr25519Public {
 
 impl Eq for Sr25519Public {}
 
-impl Default for Sr25519Public {
-    fn default() -> Self {
-        Sr25519Public([0u8; 32])
+impl Hash for Sr25519Public {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
     }
 }
 
@@ -313,7 +325,7 @@ impl fmt::Debug for Sr25519Public {
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, PartialOrd, Ord, BorshDeserialize, BorshSerialize)]
 pub struct Sr25519Signature(pub [u8; 64]);
 
 impl Sr25519Signature {
@@ -345,6 +357,12 @@ impl PartialEq for Sr25519Signature {
 
 impl Eq for Sr25519Signature {}
 
+impl Hash for Sr25519Signature {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
+    }
+}
+
 impl Default for Sr25519Signature {
     fn default() -> Self {
         Sr25519Signature([0u8; 64])
@@ -365,7 +383,7 @@ impl fmt::Debug for Sr25519Signature {
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, Default, PartialOrd, Ord, BorshDeserialize, BorshSerialize)]
 pub struct X25519Public(pub [u8; 32]);
 
 impl X25519Public {
@@ -397,9 +415,9 @@ impl PartialEq for X25519Public {
 
 impl Eq for X25519Public {}
 
-impl Default for X25519Public {
-    fn default() -> Self {
-        X25519Public([0u8; 32])
+impl Hash for X25519Public {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
     }
 }
 
@@ -416,7 +434,7 @@ impl fmt::Debug for X25519Public {
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(PartialOrd, Default, Ord, BorshDeserialize, BorshSerialize)]
 pub struct Secret32Bytes(pub [u8; 32]);
 
 impl PartialEq for Secret32Bytes {
@@ -426,6 +444,12 @@ impl PartialEq for Secret32Bytes {
 }
 
 impl Eq for Secret32Bytes {}
+
+impl Hash for Secret32Bytes {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
+    }
+}
 
 impl Zeroize for Secret32Bytes {
     fn zeroize(&mut self) {
@@ -456,12 +480,6 @@ impl Clone for Secret32Bytes {
     }
 }
 
-impl Default for Secret32Bytes {
-    fn default() -> Self {
-        Secret32Bytes([0u8; 32])
-    }
-}
-
 impl fmt::Debug for Secret32Bytes {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("Secret32Bytes").field(&"[REDACTED]").finish()
@@ -473,7 +491,7 @@ impl fmt::Debug for Secret32Bytes {
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(Clone, Copy, Default, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, Default, PartialOrd, Ord, BorshDeserialize, BorshSerialize)]
 pub struct AeadNonce(pub ByteArray12);
 
 #[cfg(feature = "zeroize_aead")]
@@ -491,6 +509,12 @@ impl PartialEq for AeadNonce {
 
 impl Eq for AeadNonce {}
 
+impl Hash for AeadNonce {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
+    }
+}
+
 #[cfg(feature = "hex")]
 impl fmt::Debug for AeadNonce {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -505,7 +529,7 @@ impl fmt::Debug for AeadNonce {
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(Clone, Copy, Default, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, Default, PartialOrd, Ord, BorshDeserialize, BorshSerialize)]
 pub struct AeadXNonce(pub ByteArray24);
 
 #[cfg(feature = "zeroize_aead")]
@@ -523,6 +547,12 @@ impl PartialEq for AeadXNonce {
 
 impl Eq for AeadXNonce {}
 
+impl Hash for AeadXNonce {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
+    }
+}
+
 #[cfg(feature = "hex")]
 impl fmt::Debug for AeadXNonce {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -537,7 +567,7 @@ impl fmt::Debug for AeadXNonce {
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(Clone, Default, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Default, Copy, PartialOrd, Ord, BorshDeserialize, BorshSerialize)]
 pub struct AeadTag(pub ByteArray16);
 
 #[cfg(feature = "zeroize_aead")]
@@ -554,6 +584,12 @@ impl PartialEq for AeadTag {
 }
 
 impl Eq for AeadTag {}
+
+impl Hash for AeadTag {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
+    }
+}
 
 #[cfg(feature = "hex")]
 impl fmt::Debug for AeadTag {

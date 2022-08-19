@@ -1,3 +1,5 @@
+use core::cmp::Ordering;
+
 use borsh::{BorshDeserialize, BorshSerialize};
 
 /// The tally of the votes cast.
@@ -44,13 +46,17 @@ impl VoteTally {
 
     /// Return the outcome of the votes cast
     pub fn outcome(&self) -> VoteOutcome {
-        if self.accepted > self.rejected {
-            VoteOutcome::Accepted
-        } else if self.accepted == self.rejected {
-            VoteOutcome::Equal
-        } else {
-            VoteOutcome::Rejected
+        match self.accepted.cmp(&self.rejected) {
+            Ordering::Greater => VoteOutcome::Accepted,
+            Ordering::Less => VoteOutcome::Rejected,
+            Ordering::Equal => VoteOutcome::Equal,
         }
+    }
+}
+
+impl Default for VoteTally {
+    fn default() -> Self {
+        VoteTally::new()
     }
 }
 

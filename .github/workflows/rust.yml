@@ -16,8 +16,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Install `cargo deny`
+      run: cargo install cargo-deny
     - name: Check Licenses
-      run: cargo deny
+      run: cargo deny check
     - name: Format code
       run: cargo fmt --all
     - name: Clippy lints

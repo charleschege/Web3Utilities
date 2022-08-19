@@ -47,6 +47,13 @@ full = [
     "tai64",
     "clonable_secret",
     "debug_secret",
+    "zeroize_timestamp",
+    "zeroize_ed25519_public",
+    "zeroize_ed25519_signature",
+    "zeroize_sr25519_public",
+    "zeroize_sr25519_signature",
+    "zeroize_x25519_public",
+    "zeroize_aead",
 ]
 base58 = ["dep:bs58"]
 hex = ["dep:hex"]
@@ -57,3 +64,10 @@ common = []
 tai64 = ["dep:tai64"]
 clonable_secret = []
 debug_secret = ["dep:hex"]
+zeroize_timestamp = []
+zeroize_ed25519_public = []
+zeroize_ed25519_signature = []
+zeroize_sr25519_public = []
+zeroize_sr25519_signature = []
+zeroize_x25519_public = []
+zeroize_aead = []

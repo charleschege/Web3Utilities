@@ -4,6 +4,8 @@ use zeroize::{Zeroize, ZeroizeOnDrop};
 
 use core::fmt;
 
+use crate::UtilitiesResult;
+
 /// An array of 12 bytes.
 /// This does not implement hex or base58 fmt::Debug  or constant time equality checks.
 pub type ByteArray12 = [u8; 12];
@@ -39,6 +41,20 @@ pub type UnixTimestampSigned = i64;
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Blake3Hash(pub ByteArray32);
 
+impl Blake3Hash {
+    /// String representation of the Blake3 Hash bytes
+    #[cfg(feature = "hex")]
+    pub fn to_hex(&self) -> String {
+        hex::encode(&self.0)
+    }
+}
+
+impl Zeroize for Blake3Hash {
+    fn zeroize(&mut self) {
+        self.0 = Blake3Hash::default().0;
+    }
+}
+
 impl PartialEq for Blake3Hash {
     fn eq(&self, other: &Self) -> bool {
         constant_time_eq_n(&self.0, &other.0)
@@ -56,9 +72,7 @@ impl Default for Blake3Hash {
 #[cfg(feature = "hex")]
 impl fmt::Debug for Blake3Hash {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_tuple("Blake3Hash")
-            .field(&hex::encode(&self.0))
-            .finish()
+        f.debug_tuple("Blake3Hash").field(&self.to_hex()).finish()
     }
 }
 
@@ -69,6 +83,35 @@ impl fmt::Debug for Blake3Hash {
 /// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct TaiTimestamp(pub ByteArray12);
+
+impl TaiTimestamp {
+    /// Convert to a human readable data and time as a`String`primitive
+    #[cfg(feature = "tai64")]
+    pub fn to_datetime(&self) -> UtilitiesResult<String> {
+        use crate::Utilities;
+        use monotonic_time::DateTime;
+
+        let timestamp = Utilities::bytes_to_tai64n(&self.0)?;
+        let duration = Utilities::tai64_get_secs(timestamp)?;
+        let mut datetime = DateTime::new();
+        datetime.to_datetime(duration);
+
+        Ok(datetime.to_string())
+    }
+
+    /// Return the `hex` representation of the bytes
+    #[cfg(feature = "hex")]
+    pub fn to_hex(&self) -> String {
+        hex::encode(&self.0)
+    }
+}
+
+#[cfg(all(feature = "zeroize_timestamp", feature = "tai64"))]
+impl Zeroize for TaiTimestamp {
+    fn zeroize(&mut self) {
+        self.0 = tai64::Tai64N::UNIX_EPOCH.to_bytes()
+    }
+}
 
 impl PartialEq for TaiTimestamp {
     fn eq(&self, other: &Self) -> bool {
@@ -101,18 +144,8 @@ impl Default for TaiTimestamp {
 #[cfg(feature = "tai64")]
 impl fmt::Debug for TaiTimestamp {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use crate::Utilities;
-        use monotonic_time::DateTime;
-
-        match Utilities::bytes_to_tai64n(&self.0) {
-            Ok(timestamp) => match Utilities::tai64_get_secs(timestamp) {
-                Ok(duration) => {
-                    let mut datetime = DateTime::new();
-
-                    write!(f, "{}", datetime.to_datetime(duration))
-                }
-                Err(error) => write!(f, "{:?}", error),
-            },
+        match self.to_datetime() {
+            Ok(timestamp) => write!(f, "{:?}", timestamp),
             Err(error) => write!(f, "{:?}", error),
         }
     }
@@ -125,6 +158,27 @@ impl fmt::Debug for TaiTimestamp {
 /// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Ed25519Public(pub [u8; 32]);
+
+impl Ed25519Public {
+    /// Return the `hex` representation of the bytes
+    #[cfg(feature = "hex")]
+    pub fn to_hex(&self) -> String {
+        hex::encode(&self.0)
+    }
+
+    /// Return the `base58` representation of the bytes
+    #[cfg(feature = "base58")]
+    pub fn to_base58(&self) -> String {
+        bs58::encode(&self.0).into_string()
+    }
+}
+
+#[cfg(feature = "zeroize_ed25519_public")]
+impl Zeroize for Ed25519Public {
+    fn zeroize(&mut self) {
+        self.0 = Ed25519Public::default().0
+    }
+}
 
 impl PartialEq for Ed25519Public {
     fn eq(&self, other: &Self) -> bool {
@@ -144,7 +198,7 @@ impl Default for Ed25519Public {
 impl fmt::Debug for Ed25519Public {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("Ed25519Public")
-            .field(&bs58::encode(&self.0).into_string())
+            .field(&self.to_base58())
             .finish()
     }
 }
@@ -156,6 +210,27 @@ impl fmt::Debug for Ed25519Public {
 /// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Ed25519Signature(pub [u8; 64]);
+
+impl Ed25519Signature {
+    /// Return the `hex` representation of the bytes
+    #[cfg(feature = "hex")]
+    pub fn to_hex(&self) -> String {
+        hex::encode(&self.0)
+    }
+
+    /// Return the `base58` representation of the bytes
+    #[cfg(feature = "base58")]
+    pub fn to_base58(&self) -> String {
+        bs58::encode(&self.0).into_string()
+    }
+}
+
+#[cfg(feature = "zeroize_ed25519_signature")]
+impl Zeroize for Ed25519Signature {
+    fn zeroize(&mut self) {
+        self.0 = Ed25519Signature::default().0
+    }
+}
 
 impl PartialEq for Ed25519Signature {
     fn eq(&self, other: &Self) -> bool {
@@ -171,11 +246,12 @@ impl Default for Ed25519Signature {
     }
 }
 
+/// Return the `base58` representation of the bytes
 #[cfg(feature = "base58")]
 impl fmt::Debug for Ed25519Signature {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("Ed25519Signature")
-            .field(&bs58::encode(&self.0).into_string())
+            .field(&self.to_base58())
             .finish()
     }
 }
@@ -187,6 +263,27 @@ impl fmt::Debug for Ed25519Signature {
 /// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Sr25519Public(pub [u8; 32]);
+
+impl Sr25519Public {
+    /// Return the `hex` representation of the bytes
+    #[cfg(feature = "hex")]
+    pub fn to_hex(&self) -> String {
+        hex::encode(&self.0)
+    }
+
+    /// Return the `base58` representation of the bytes
+    #[cfg(feature = "base58")]
+    pub fn to_base58(&self) -> String {
+        bs58::encode(&self.0).into_string()
+    }
+}
+
+#[cfg(feature = "zeroize_sr25519_public")]
+impl Zeroize for Sr25519Public {
+    fn zeroize(&mut self) {
+        self.0 = Sr25519Public::default().0
+    }
+}
 
 impl PartialEq for Sr25519Public {
     fn eq(&self, other: &Self) -> bool {
@@ -206,7 +303,7 @@ impl Default for Sr25519Public {
 impl fmt::Debug for Sr25519Public {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("Sr25519Public")
-            .field(&bs58::encode(&self.0).into_string())
+            .field(&self.to_base58())
             .finish()
     }
 }
@@ -218,6 +315,27 @@ impl fmt::Debug for Sr25519Public {
 /// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct Sr25519Signature(pub [u8; 64]);
+
+impl Sr25519Signature {
+    /// Return the `hex` representation of the bytes
+    #[cfg(feature = "hex")]
+    pub fn to_hex(&self) -> String {
+        hex::encode(&self.0)
+    }
+
+    /// Return the `base58` representation of the bytes
+    #[cfg(feature = "base58")]
+    pub fn to_base58(&self) -> String {
+        bs58::encode(&self.0).into_string()
+    }
+}
+
+#[cfg(feature = "zeroize_sr25519_signature")]
+impl Zeroize for Sr25519Signature {
+    fn zeroize(&mut self) {
+        self.0 = Sr25519Signature::default().0
+    }
+}
 
 impl PartialEq for Sr25519Signature {
     fn eq(&self, other: &Self) -> bool {
@@ -237,7 +355,7 @@ impl Default for Sr25519Signature {
 impl fmt::Debug for Sr25519Signature {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("Sr25519Signature")
-            .field(&bs58::encode(&self.0).into_string())
+            .field(&self.to_base58())
             .finish()
     }
 }
@@ -249,6 +367,27 @@ impl fmt::Debug for Sr25519Signature {
 /// and a possibly smaller code size compared to serde binary representations.
 #[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct X25519Public(pub [u8; 32]);
+
+impl X25519Public {
+    /// Return the `hex` representation of the bytes
+    #[cfg(feature = "hex")]
+    pub fn to_hex(&self) -> String {
+        hex::encode(&self.0)
+    }
+
+    /// Return the `base58` representation of the bytes
+    #[cfg(feature = "base58")]
+    pub fn to_base58(&self) -> String {
+        bs58::encode(&self.0).into_string()
+    }
+}
+
+#[cfg(feature = "zeroize_x25519_public")]
+impl Zeroize for X25519Public {
+    fn zeroize(&mut self) {
+        self.0 = X25519Public::default().0
+    }
+}
 
 impl PartialEq for X25519Public {
     fn eq(&self, other: &Self) -> bool {
@@ -267,9 +406,7 @@ impl Default for X25519Public {
 #[cfg(feature = "hex")]
 impl fmt::Debug for X25519Public {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_tuple("X25519Public")
-            .field(&hex::encode(&self.0))
-            .finish()
+        f.debug_tuple("X25519Public").field(&self.to_hex()).finish()
     }
 }
 
@@ -305,6 +442,11 @@ impl Secret32Bytes {
     pub fn dangerous_debug(&self) -> String {
         hex::encode(&self.0)
     }
+
+    /// Return the `hex` representation of the bytes
+    pub fn to_hex<'a>(&self) -> &'a str {
+        "[REDACTED]"
+    }
 }
 
 #[cfg(feature = "clonable_secret")]
@@ -331,8 +473,15 @@ impl fmt::Debug for Secret32Bytes {
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, Default, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct AeadNonce(pub ByteArray12);
+
+#[cfg(feature = "zeroize_aead")]
+impl Zeroize for AeadNonce {
+    fn zeroize(&mut self) {
+        self.0 = AeadNonce::default().0
+    }
+}
 
 impl PartialEq for AeadNonce {
     fn eq(&self, other: &Self) -> bool {
@@ -356,8 +505,15 @@ impl fmt::Debug for AeadNonce {
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Copy, Default, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct AeadXNonce(pub ByteArray24);
+
+#[cfg(feature = "zeroize_aead")]
+impl Zeroize for AeadXNonce {
+    fn zeroize(&mut self) {
+        self.0 = AeadXNonce::default().0
+    }
+}
 
 impl PartialEq for AeadXNonce {
     fn eq(&self, other: &Self) -> bool {
@@ -381,8 +537,15 @@ impl fmt::Debug for AeadXNonce {
 /// and an implementation for Borsh encoding that ensure
 /// no two binary representations that deserialize into the same object
 /// and a possibly smaller code size compared to serde binary representations.
-#[derive(Clone, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
+#[derive(Clone, Default, Copy, PartialOrd, Ord, Hash, BorshDeserialize, BorshSerialize)]
 pub struct AeadTag(pub ByteArray16);
+
+#[cfg(feature = "zeroize_aead")]
+impl Zeroize for AeadTag {
+    fn zeroize(&mut self) {
+        self.0 = AeadTag::default().0
+    }
+}
 
 impl PartialEq for AeadTag {
     fn eq(&self, other: &Self) -> bool {

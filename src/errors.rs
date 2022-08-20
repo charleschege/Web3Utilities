@@ -196,9 +196,10 @@ impl From<std::io::Error> for UtilitiesError {
             ErrorKind::TimedOut => UtilitiesError::Io(IoErrorKind::TimedOut),
             ErrorKind::WriteZero => UtilitiesError::Io(IoErrorKind::WriteZero),
             ErrorKind::Interrupted => UtilitiesError::Io(IoErrorKind::Interrupted),
-            ErrorKind::Other => UtilitiesError::Io(IoErrorKind::Other),
             ErrorKind::UnexpectedEof => UtilitiesError::Io(IoErrorKind::UnexpectedEof),
-            _ => UtilitiesError::Io(IoErrorKind::Unsupported),
+            ErrorKind::OutOfMemory => UtilitiesError::Io(IoErrorKind::OutOfMemory),
+            ErrorKind::Other => UtilitiesError::Io(IoErrorKind::Other),
+            _ => UtilitiesError::Io(IoErrorKind::UnsupportedErrorKind),
         }
     }
 }
@@ -252,6 +253,8 @@ pub enum IoErrorKind {
     ///
     /// This typically means that an operation could only succeed if it read a particular number of bytes but only a smaller number of bytes could be read.
     UnexpectedEof,
-    /// The error is not supported
-    Unsupported,
+    /// An operation could not be completed, because it failed to allocate enough memory.
+    OutOfMemory,
+    /// `ErrorKind` encountered is not yet supported
+    UnsupportedErrorKind,
 }

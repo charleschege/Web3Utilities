@@ -669,6 +669,7 @@ impl fmt::Debug for SecretVec {
 )]
 pub struct HexVec(pub Vec<u8>);
 
+#[cfg(feature = "hex")]
 impl fmt::Debug for HexVec {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_tuple("HexVec")

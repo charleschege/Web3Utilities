@@ -599,3 +599,80 @@ impl fmt::Debug for AeadTag {
             .finish()
     }
 }
+
+/// A representation of a Vec of bytes with
+/// default constant time equality checks, hex `fmt::Debug` and hex `fmt::Display`,
+/// implementation for zeroize for zeroing memory when the value is dropped
+/// and an implementation for Borsh encoding that ensure
+/// no two binary representations that deserialize into the same object
+/// and a possibly smaller code size compared to serde binary representations.
+#[derive(PartialOrd, Default, Ord, BorshDeserialize, BorshSerialize)]
+pub struct SecretVec(pub Vec<u8>);
+
+impl PartialEq for SecretVec {
+    fn eq(&self, other: &Self) -> bool {
+        constant_time_eq::constant_time_eq(&self.0, &other.0)
+    }
+}
+
+impl Eq for SecretVec {}
+
+impl Hash for SecretVec {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
+    }
+}
+
+impl Zeroize for SecretVec {
+    fn zeroize(&mut self) {
+        self.0.clear();
+    }
+}
+
+impl ZeroizeOnDrop for SecretVec {}
+
+#[cfg(feature = "debug_secret")]
+impl SecretVec {
+    /// Debug the secret key. This is a dangerous operation since
+    /// it returns the hex of the secret key which can be logged
+    pub fn dangerous_debug(&self) -> String {
+        hex::encode(&self.0)
+    }
+
+    /// Return the `hex` representation of the bytes
+    pub fn to_hex<'a>(&self) -> &'a str {
+        "[REDACTED]"
+    }
+}
+
+#[cfg(feature = "clonable_secret")]
+impl Clone for SecretVec {
+    fn clone(&self) -> Self {
+        SecretVec(self.0.clone())
+    }
+}
+
+impl fmt::Debug for SecretVec {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_tuple("SecretVec").field(&"[REDACTED]").finish()
+    }
+}
+
+/// A representation of a Vec of bytes with
+/// default constant time equality checks, hex `fmt::Debug` and hex `fmt::Display`,
+/// implementation for zeroize for zeroing memory when the value is dropped
+/// and an implementation for Borsh encoding that ensure
+/// no two binary representations that deserialize into the same object
+/// and a possibly smaller code size compared to serde binary representations.
+#[derive(
+    PartialOrd, Clone, PartialEq, Eq, Hash, Default, Ord, BorshDeserialize, BorshSerialize,
+)]
+pub struct HexVec(pub Vec<u8>);
+
+impl fmt::Debug for HexVec {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_tuple("HexVec")
+            .field(&hex::encode(&self.0))
+            .finish()
+    }
+}
